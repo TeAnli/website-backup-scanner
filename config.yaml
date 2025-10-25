@@ -1,0 +1,21 @@
+default_name:
+  - backup
+  - copy
+  - snapshot
+  - web
+  - website
+  - backup
+  - back
+  - www
+  - wwwroot
+  - temp
+default_suffix:
+  - zip
+  - tar.gz
+  - tar
+  - 7z
+  - 7-zip
+  - gz
+  - bz2
+  - xz
+  - rar
