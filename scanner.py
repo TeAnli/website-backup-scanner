@@ -1,11 +1,8 @@
 import requests
 import argparse
+import yaml
 
 from rich.console import Console
-
-# setting common backup filename and suffix
-DEFAULT_NAME = ['web', 'website', 'backup', 'back', 'www', 'wwwroot', 'temp']
-DEFAULT_SUFFIX = ['tar', 'tar.gz', 'zip', 'rar', '7-zip', '7z']
 
 def get_file_size(url):
     response = requests.head(url)
@@ -18,20 +15,32 @@ def get_file_size(url):
 def initialize_argument_parser():
     parser = argparse.ArgumentParser(description='website-backup-scanner')
     parser.add_argument('url', help='the target website url path')
+    parser.add_argument('-d', '--delay', help='this argument recive a milliseconds to delay your custom time')
     return parser
 
+def get_configuration():
+    # 获取当前目录下的config.yaml文件
+    config_path = 'config.yaml'
+    with open(config_path, 'r') as config_file:
+        config = yaml.safe_load(config_file)
+    return config
 
 def main():
-    parser = initialize_argument_parser()
     console = Console()
-
     # get the arguments
+    parser = initialize_argument_parser()
     arguments = parser.parse_args()
     url = arguments.url
-    with console.status("[bold green]WEBSITE-BACKUP-SCANNER scanning...") as status:
+    delay = arguments.delay
+    # get the configuration
+    config = get_configuration()
+    default_name = config.get('default_name', [])
+    default_suffix = config.get('default_suffix', [])
+
+    with console.status("[bold green]`WEBSITE-BACKUP-SCANNER scanning...") as status:
         # foreach the filename is composed of a prefix and a suffix
-        for name in DEFAULT_NAME:
-            for suffix in DEFAULT_SUFFIX:
+        for name in default_name:
+            for suffix in default_suffix:
                 # splice suffix and name to a filename
                 backup_filename = f'{name}.{suffix}'
                 final_url = f'{url}/{backup_filename}'
