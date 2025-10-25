@@ -1,8 +1,11 @@
+import time
 import requests
 import argparse
 import yaml
 
 from rich.console import Console
+
+console = Console()
 
 def get_file_size(url):
     response = requests.head(url)
@@ -26,12 +29,11 @@ def get_configuration():
     return config
 
 def main():
-    console = Console()
     # get the arguments
     parser = initialize_argument_parser()
     arguments = parser.parse_args()
     url = arguments.url
-    delay = arguments.delay
+    delay = int(arguments.delay) or 0
     # get the configuration
     config = get_configuration()
     default_name = config.get('default_name', [])
@@ -54,7 +56,10 @@ def main():
                     case _:
                         console.log(f'[bold red][{response.status_code}][/bold red] -  {get_file_size(url)}B -  /{backup_filename}')
 
+                time.sleep(delay / 1000)
+
 if __name__ == "__main__":
-    main()
-
-
+    try:
+        main()
+    except KeyboardInterrupt as e:
+        console.log(f'[bold red]Operation cancelled by user.[/bold red]')
